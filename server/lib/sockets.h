@@ -15,7 +15,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-void createServerStreamSocket();
+#define _SERVERPORT 8000
+
+int createStreamSocket();
+void initSocketAddress(struct sockaddr_in* socketAddress, const in_addr_t addr);
 
 
 #endif

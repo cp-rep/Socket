@@ -29,3 +29,27 @@ int createStreamSocket()
 
   return socketfd;
 } // end of "createStreamSocket"
+
+
+
+/*
+  Function:
+   initSocketAddress
+
+  Description:
+   Defines an incoming sockaddr_in with IpV4 address related data. Network
+   byte order is handled where needed.
+
+  Input:
+   serverAddress        - A pointer to a sockaddr_int type that will be used
+                          for defining IpV4 socket address data.
+
+  Output:
+   NONE
+ */
+void initSocketAddress(struct sockaddr_in* socketAddress, const in_addr_t addr)
+{
+  socketAddress->sin_family = AF_INET;
+  socketAddress->sin_port = htons(_SERVERPORT);
+  socketAddress->sin_addr.s_addr = addr;
+} // end of "initServerAddress"
