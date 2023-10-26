@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include "sockets.h"
 
+
 /*
   Function:
    main
@@ -28,9 +29,9 @@ int main(void)
   
   socketfd = createStreamSocket();
 
-  
+  struct sockaddr_in serverAddress;
+  initSocketAddress(&serverAddress,
+		    INADDR_ANY);
 
-  
-  
   return 0;
 } // end of "main"
