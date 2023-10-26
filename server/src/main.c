@@ -25,7 +25,7 @@
 
   Description:
    The main driver function for the server side of client/server data transmission.
- */
+*/
 int main(void)
 {
   int serverSocket = 0;
@@ -37,10 +37,10 @@ int main(void)
   // define server address IPv4 data
   initSocketAddressWrapper(&serverAddress,
 			   INADDR_ANY);
-
+  
   // bind the socket to server address
   bindWrapper(&serverSocket, &serverAddress);
-
+  
   // set socket into listening mode
   listenWrapper(&serverSocket,
 		_QUEUELEN);
@@ -56,13 +56,15 @@ int main(void)
       int clientSocket = accept(serverSocket,
 				(struct sockaddr*)&clientAddress,
 				&clientAddressLen);
-
       if(clientSocket == -1)
 	{
 	  perror("Error accepting connection.\n");
 	  continue;
 	}
-    }
 
+      const char* response = "Hello.";
+      send(clientSocket, response, strlen(response), 0);
+    }
+  
   return 0;
 } // end of "main"
