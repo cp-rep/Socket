@@ -1,21 +1,19 @@
 BINDIR=./bin
 SRCDIR=./src
-BUILDDIR=./build
 MKDIR_P=mkdir -p
 LDIR=./lib
 ODIR=obj
-CC=g++
+CC=gcc
 CPPFLAGS=-I$(IDIR)
 LIBS=-lm
 BINNAME=client
-_DEPS =
+_DEPS= 
 _OBJ = main.o
 
 DEPS = $(patsubst %,$(LDIR)/%,$(_DEPS))
-
 OBJ = $(patsubst %,$(SRCDIR)/$(ODIR)/%,$(_OBJ))
 
-$(SRCDIR)/$(ODIR)/%.o: $(SRCDIR)/%.cpp $(DEPS)
+$(SRCDIR)/$(ODIR)/%.o: $(SRCDIR)/%.c $(DEPS)
 	$(CC) -c -o $@ $< -I$(LDIR)
 
 $(BINDIR)/$(BINNAME): $(OBJ)
