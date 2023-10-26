@@ -1,6 +1,11 @@
+/*
+  File:
+   sockets.c
+
+  Description:
+   The implementations of socket.h functions.
+*/
 #include "sockets.h"
-
-
 
 /*
   Function:
@@ -83,7 +88,7 @@ void bindWrapper(int* socketfd,
 
   if(tempInt == -1)
     {
-      perror("Error binding socket to address.\n");
+      perror("Error binding socket to address.");
       close(*socketfd);
       exit(EXIT_FAILURE);
     }
@@ -117,8 +122,46 @@ void listenWrapper(int* socketfd,
 
   if(listenVal == -1)
     {
-      perror("Error binding socket to address.\n");
+      perror("Error binding socket to address.");
       close(*socketfd);
       exit(EXIT_FAILURE);
     }
 } // end of "listenWrapper"
+
+
+
+
+/*
+  Function:
+   connectWrapper
+
+  Description:
+   Attempts to connect the client socket to a provided server address. If failure 
+   to connect, an error is printed and program is exited returning the error to the OS.
+   
+  Input:
+   clientSocket         - A pointer to an integer containing the client socket file
+                          descriptor.
+
+   serverAddress        - A pointer to a struct sockaddr_in type that contains defined
+                          IPv4 server address data.
+
+  Output:
+   None
+ */
+void connectWrapper(int* clientSocket,
+		    struct sockaddr_in* serverAddress)
+{
+  int connectValue;
+  
+  connectValue = connect(*clientSocket,
+			 (struct sockaddr*)*(&serverAddress),
+			 sizeof(*serverAddress));
+
+  if(connectValue == -1)
+    {
+      perror("Error connecting to server");
+      close(*clientSocket);
+      exit(EXIT_FAILURE);
+    }
+} // end of "connectWrapper"
