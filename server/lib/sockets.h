@@ -19,6 +19,6 @@
 
 int createStreamSocket();
 void initSocketAddress(struct sockaddr_in* socketAddress, const in_addr_t addr);
-
+void bindSocket(int* socketfd, struct sockaddr_in* address);
 
 #endif

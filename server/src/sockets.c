@@ -53,3 +53,36 @@ void initSocketAddress(struct sockaddr_in* socketAddress, const in_addr_t addr)
   socketAddress->sin_port = htons(_SERVERPORT);
   socketAddress->sin_addr.s_addr = addr;
 } // end of "initServerAddress"
+
+
+
+/*
+  Function:
+   bindSocket
+
+  Description:
+   Binds the incoming socket to the incoming address data.  If it fails,
+   the program exits returning an error code to the OS.
+
+  Input:
+   socketfd             - A pointer to an integer holding the address of the
+                          socket file descriptor to bind.
+
+   sockaddr_int         - A pointer to a sockaddr_in structure that contains
+                          address information to bind to bind with the 
+                          incoming socket descriptor.
+  Output:
+   None
+*/
+void bindSocket(int* socketfd, struct sockaddr_in* socketAddress)
+{
+  int tempInt;
+  tempInt = bind(*socketfd, (struct sockaddr*)&(*socketAddress), sizeof(*socketAddress));
+
+  if(tempInt == -1)
+    {
+      fprintf(stderr, "Error binding socket to address.\n");
+      close(*socketfd);
+      exit(EXIT_FAILURE);
+    }
+} // end of "bindSocket"
