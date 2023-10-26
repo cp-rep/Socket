@@ -3,6 +3,8 @@
    sockets.h
 
   Description:
+   Contains the function declartions for socket related functions defined
+   in the sockets.c file.
 */
 #ifndef SOCKETS_H
 #define SOCKETS_H
@@ -25,4 +27,6 @@ void bindWrapper(int* socketfd,
 		 struct sockaddr_in* address);
 void listenWrapper(int* socketfd,
 		   const int queueLen);
+void connectWrapper(int* clientSocket,
+		    struct sockaddr_in* serverAddress);
 #endif
