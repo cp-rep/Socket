@@ -7,8 +7,8 @@ CC=gcc
 CPPFLAGS=-I$(IDIR)
 LIBS=-lm
 BINNAME=server
-_DEPS=
-_OBJ = main.o
+_DEPS= sockets.h
+_OBJ = main.o sockets.o
 
 DEPS = $(patsubst %,$(LDIR)/%,$(_DEPS))
 OBJ = $(patsubst %,$(SRCDIR)/$(ODIR)/%,$(_OBJ))
