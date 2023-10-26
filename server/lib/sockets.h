@@ -16,9 +16,11 @@
 #include <unistd.h>
 
 #define _SERVERPORT 8000
+#define _QUEUELEN 10
 
-int createStreamSocket();
-void initSocketAddress(struct sockaddr_in* socketAddress, const in_addr_t addr);
-void bindSocket(int* socketfd, struct sockaddr_in* address);
+int createStreamSocketWrapper();
+void initSocketAddressWrapper(struct sockaddr_in* socketAddress, const in_addr_t addr);
+void bindWrapper(int* socketfd, struct sockaddr_in* address);
+void listenWrapper(int* socketfd, const int queueLen);
 
 #endif

@@ -17,13 +17,13 @@
   Output:
    int                  - An integer type containing the socket descriptor.
  */
-int createStreamSocket()
+int createStreamSocketWrapper()
 {
   int socketfd = socket(AF_INET, SOCK_STREAM, 0);
 
   if(socketfd == -1)
     {
-      fprintf(stderr, "Error creating socket communication type SOCK_STREAM\n");
+      perror("Error creating socket communication type SOCK_STREAM.");
       exit(EXIT_FAILURE);
     }
 
@@ -47,7 +47,7 @@ int createStreamSocket()
   Output:
    NONE
  */
-void initSocketAddress(struct sockaddr_in* socketAddress, const in_addr_t addr)
+void initSocketAddressWrapper(struct sockaddr_in* socketAddress, const in_addr_t addr)
 {
   socketAddress->sin_family = AF_INET;
   socketAddress->sin_port = htons(_SERVERPORT);
@@ -74,15 +74,48 @@ void initSocketAddress(struct sockaddr_in* socketAddress, const in_addr_t addr)
   Output:
    None
 */
-void bindSocket(int* socketfd, struct sockaddr_in* socketAddress)
+void bindWrapper(int* socketfd, struct sockaddr_in* socketAddress)
 {
   int tempInt;
   tempInt = bind(*socketfd, (struct sockaddr*)&(*socketAddress), sizeof(*socketAddress));
 
   if(tempInt == -1)
     {
-      fprintf(stderr, "Error binding socket to address.\n");
+      perror("Error binding socket to address.\n");
       close(*socketfd);
       exit(EXIT_FAILURE);
     }
 } // end of "bindSocket"
+
+
+
+/*
+  Function:
+   listenWrapper
+
+  Description:
+   Attempts to listen on the incoming socket descriptor for incoming
+   connections.
+   
+  Input:
+   socketfd             - a pointer to an int type containing the file descriptor
+                          of a socket.
+
+   queueLen             - a const int type that represents the total amount of 
+                          connections can be made at once before turning them down.
+
+  Output:
+   NONE
+*/
+void listenWrapper(int* socketfd, const int queueLen)
+{
+  int listenVal;
+  listenVal = listen(*socketfd, queueLen);
+
+  if(listenVal == -1)
+    {
+      perror("Error binding socket to address.\n");
+      close(*socketfd);
+      exit(EXIT_FAILURE);
+    }
+} // end of "listenWrapper"
