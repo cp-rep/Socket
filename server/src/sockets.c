@@ -37,17 +37,18 @@ int createStreamSocketWrapper()
    initSocketAddress
 
   Description:
-   Defines an incoming sockaddr_in with IpV4 address related data. Network
+   Defines an incoming sockaddr_in with IPv4 address related data. Network
    byte order is handled where needed.
 
   Input:
    serverAddress        - A pointer to a sockaddr_int type that will be used
-                          for defining IpV4 socket address data.
+                          for defining IPv4 socket address data.
 
   Output:
    NONE
  */
-void initSocketAddressWrapper(struct sockaddr_in* socketAddress, const in_addr_t addr)
+void initSocketAddressWrapper(struct sockaddr_in* socketAddress,
+			      const in_addr_t addr)
 {
   socketAddress->sin_family = AF_INET;
   socketAddress->sin_port = htons(_SERVERPORT);
@@ -74,7 +75,8 @@ void initSocketAddressWrapper(struct sockaddr_in* socketAddress, const in_addr_t
   Output:
    None
 */
-void bindWrapper(int* socketfd, struct sockaddr_in* socketAddress)
+void bindWrapper(int* socketfd,
+		 struct sockaddr_in* socketAddress)
 {
   int tempInt;
   tempInt = bind(*socketfd, (struct sockaddr*)&(*socketAddress), sizeof(*socketAddress));
@@ -107,7 +109,8 @@ void bindWrapper(int* socketfd, struct sockaddr_in* socketAddress)
   Output:
    NONE
 */
-void listenWrapper(int* socketfd, const int queueLen)
+void listenWrapper(int* socketfd,
+		   const int queueLen)
 {
   int listenVal;
   listenVal = listen(*socketfd, queueLen);

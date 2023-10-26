@@ -19,8 +19,10 @@
 #define _QUEUELEN 10
 
 int createStreamSocketWrapper();
-void initSocketAddressWrapper(struct sockaddr_in* socketAddress, const in_addr_t addr);
-void bindWrapper(int* socketfd, struct sockaddr_in* address);
-void listenWrapper(int* socketfd, const int queueLen);
-
+void initSocketAddressWrapper(struct sockaddr_in* socketAddress,
+			      const in_addr_t addr);
+void bindWrapper(int* socketfd,
+		 struct sockaddr_in* address);
+void listenWrapper(int* socketfd,
+		   const int queueLen);
 #endif
