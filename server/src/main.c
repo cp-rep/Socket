@@ -27,13 +27,15 @@ int main(void)
 {
   int socketfd = 0;
   
-  socketfd = createStreamSocket();
+  socketfd = createStreamSocketWrapper();
 
   struct sockaddr_in serverAddress;
-  initSocketAddress(&serverAddress,
-		    INADDR_ANY);
+  initSocketAddressWrapper(&serverAddress,
+			   INADDR_ANY);
 
-  bindSocket(&socketfd, &serverAddress);
+  bindWrapper(&socketfd, &serverAddress);
+
+  listenWrapper(&socketfd, _QUEUELEN);
 
   
 
