@@ -16,6 +16,9 @@
 #include "sockets.h"
 
 
+#define _TRUE 1
+#define _FALSE 0
+
 /*
   Function:
    main
@@ -25,19 +28,41 @@
  */
 int main(void)
 {
-  int socketfd = 0;
-  
-  socketfd = createStreamSocketWrapper();
-
+  int serverSocket = 0;
   struct sockaddr_in serverAddress;
+  
+  // creat the socket
+  serverSocket = createStreamSocketWrapper();
+
+  // define server address IPv4 data
   initSocketAddressWrapper(&serverAddress,
 			   INADDR_ANY);
 
-  bindWrapper(&socketfd, &serverAddress);
+  // bind the socket to server address
+  bindWrapper(&serverSocket, &serverAddress);
 
-  listenWrapper(&socketfd, _QUEUELEN);
+  // set socket into listening mode
+  listenWrapper(&serverSocket,
+		_QUEUELEN);
 
+  fprintf(stdout, "Servering listening on port %d...\n", _SERVERPORT);
   
+  while(_TRUE)
+    {
+      // handle incoming connections
+      struct sockaddr_in clientAddress;
+      socklen_t clientAddressLen = sizeof(clientAddress);
+      
+      int clientSocket = accept(serverSocket,
+				(struct sockaddr*)&clientAddress,
+				&clientAddressLen);
+
+      if(clientSocket == -1)
+	{
+	  perror("Error accepting connection.\n");
+	  continue;
+	}
+    }
 
   return 0;
 } // end of "main"
