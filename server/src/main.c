@@ -33,5 +33,9 @@ int main(void)
   initSocketAddress(&serverAddress,
 		    INADDR_ANY);
 
+  bindSocket(&socketfd, &serverAddress);
+
+  
+
   return 0;
 } // end of "main"
