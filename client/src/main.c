@@ -17,16 +17,13 @@
 
 #define _SERVERIP "127.0.0.1"
 #define _SERVERPORT 8000
-#define _PATTERN "Pattern is: ./client [-m, -f] where -m is for message and 'f' for file\n"
+#define _PATTERN "Pattern is: ./client [-m, -f] where 'm' is for message and 'f' for file\n"
 
 
 
 /*
   Function:
    main
-
-  Description:
-   The main driver function for the client side of client/server data transmission.
 */
 int main(int argc, char** argv)
 {
