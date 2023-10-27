@@ -70,7 +70,7 @@ int main(int argc, char** argv)
       response[bytesRead] = 0;
       fprintf(stdout, "Server Response: %s\n", response);
     }
-  if(strcmp(argv[1], "-f") == 0)
+  else if(strcmp(argv[1], "-f") == 0)
     {
       
     }
