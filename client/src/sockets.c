@@ -28,7 +28,7 @@ int createStreamSocketWrapper()
 
   if(socketfd == -1)
     {
-      perror("Error creating socket communication type SOCK_STREAM.");
+      perror("Error creating socket communication type SOCK_STREAM: ");
       exit(EXIT_FAILURE);
     }
 
@@ -53,11 +53,12 @@ int createStreamSocketWrapper()
    NONE
  */
 void initSocketAddressWrapper(struct sockaddr_in* socketAddress,
-			      const in_addr_t addr)
+			      const in_addr_t addr,
+			      const int port)
 {
   socketAddress->sin_family = AF_INET;
-  socketAddress->sin_port = htons(_SERVERPORT);
   socketAddress->sin_addr.s_addr = addr;
+  socketAddress->sin_port = htons(port);
 } // end of "initServerAddress"
 
 
@@ -88,7 +89,7 @@ void bindWrapper(int* socketfd,
 
   if(tempInt == -1)
     {
-      perror("Error binding socket to address.");
+      perror("Error binding socket to address: ");
       close(*socketfd);
       exit(EXIT_FAILURE);
     }
@@ -122,7 +123,7 @@ void listenWrapper(int* socketfd,
 
   if(listenVal == -1)
     {
-      perror("Error binding socket to address.");
+      perror("Error binding socket to address: ");
       close(*socketfd);
       exit(EXIT_FAILURE);
     }
@@ -160,7 +161,7 @@ void connectWrapper(int* clientSocket,
 
   if(connectValue == -1)
     {
-      perror("Error connecting to server");
+      perror("Error connecting to server: ");
       close(*clientSocket);
       exit(EXIT_FAILURE);
     }
