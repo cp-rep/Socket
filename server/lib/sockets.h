@@ -21,10 +21,23 @@ int createStreamSocketWrapper();
 void initSocketAddressWrapper(struct sockaddr_in* socketAddress,
 			      const in_addr_t addr,
 			      const int port);
-void bindWrapper(int* socketfd,
+int bindWrapper(int* socketfd,
 		 struct sockaddr_in* address);
-void listenWrapper(int* socketfd,
+int listenWrapper(int* socketfd,
 		   const int queueLen);
-void connectWrapper(int* clientSocket,
+int connectWrapper(int* clientSocket,
 		    struct sockaddr_in* serverAddress);
+int acceptWrapper(int* clientSocket,
+		   int* serverSocket,
+		   struct sockaddr_in* clientAddress);
+int recvWrapper(int* clientSocket,
+		 int* serverSocket,
+		 char* responseBuff,
+		 const int buffSize,
+		 const int flag);
+FILE* fopenServerWrapper(int* clientSocket,
+			 int* serverSocket,
+			 FILE** saveFile,
+			 char* fileName,
+			 char* mode);
 #endif

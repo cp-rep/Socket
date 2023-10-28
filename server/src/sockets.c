@@ -7,9 +7,11 @@
 */
 #include "sockets.h"
 
+
+
 /*
   Function:
-   createStreamSocket
+   createStreamSocketWrapper
 
   Description:
    Attempts to open a socket of type SOCK_STREAM for TCP communication. If the socket
@@ -28,18 +30,18 @@ int createStreamSocketWrapper()
 
   if(socketfd == -1)
     {
-      perror("Error creating socket communication type SOCK_STREAM: ");
+      perror("socket() failed");
       exit(EXIT_FAILURE);
     }
 
   return socketfd;
-} // end of "createStreamSocket"
+} // end of "createStreamSocketWrapper"
 
 
 
 /*
   Function:
-   initSocketAddress
+   initSocketAddressWrapper
 
   Description:
    Defines an incoming sockaddr_in with IPv4 address related data. Network
@@ -59,13 +61,13 @@ void initSocketAddressWrapper(struct sockaddr_in* socketAddress,
   socketAddress->sin_family = AF_INET;
   socketAddress->sin_addr.s_addr = addr;
   socketAddress->sin_port = htons(port);
-} // end of "initServerAddress"
+} // end of "initSocketAddressWrapper"
 
 
 
 /*
   Function:
-   bindSocket
+   bindWrapper
 
   Description:
    Binds the incoming socket to the incoming address data.  If it fails,
@@ -81,19 +83,21 @@ void initSocketAddressWrapper(struct sockaddr_in* socketAddress,
   Output:
    None
 */
-void bindWrapper(int* socketfd,
+int bindWrapper(int* socketfd,
 		 struct sockaddr_in* socketAddress)
 {
-  int tempInt;
-  tempInt = bind(*socketfd, (struct sockaddr*)&(*socketAddress), sizeof(*socketAddress));
+  int bindVal;
+  bindVal = bind(*socketfd, (struct sockaddr*)&(*socketAddress), sizeof(*socketAddress));
 
-  if(tempInt == -1)
+  if(bindVal == -1)
     {
-      perror("Error binding socket to address: ");
+      perror("bind() failed");
       close(*socketfd);
       exit(EXIT_FAILURE);
     }
-} // end of "bindSocket"
+
+  return bindVal;
+} // end of "bindWrapper"
 
 
 
@@ -115,7 +119,7 @@ void bindWrapper(int* socketfd,
   Output:
    NONE
 */
-void listenWrapper(int* socketfd,
+int listenWrapper(int* socketfd,
 		   const int queueLen)
 {
   int listenVal;
@@ -123,12 +127,13 @@ void listenWrapper(int* socketfd,
 
   if(listenVal == -1)
     {
-      perror("Error binding socket to address: ");
+      perror("listen() failed");
       close(*socketfd);
       exit(EXIT_FAILURE);
     }
-} // end of "listenWrapper"
 
+  return listenVal;
+} // end of "listenWrapper"
 
 
 
@@ -148,9 +153,9 @@ void listenWrapper(int* socketfd,
                           IPv4 server address data.
 
   Output:
-   None
+   int                  - Zero on connection success.
  */
-void connectWrapper(int* clientSocket,
+int connectWrapper(int* clientSocket,
 		    struct sockaddr_in* serverAddress)
 {
   int connectValue;
@@ -161,8 +166,143 @@ void connectWrapper(int* clientSocket,
 
   if(connectValue == -1)
     {
-      perror("Error connecting to server: ");
+      perror("connect() failed");
       close(*clientSocket);
       exit(EXIT_FAILURE);
     }
+
+  return connectValue;
 } // end of "connectWrapper"
+
+
+
+/*
+  Function:
+   acceptWrapper
+
+  Description:
+   The server attempts to accept a connection with the client from the provided 
+   client address.  If the connection is successful, the client socket descriptor 
+   is stored and returned to the caller.
+
+  Input:
+   clientSocket         - A pointer to an integer of an undefined client socket file
+                          descriptor.
+
+   serverSocket         - A pointer to an integer of a server socket file descriptor
+                          that describes an initialized server address of TCP type
+                          with IPv4 address data.
+
+  Output:
+   clientSocket         - The newly defined client socket file descriptor.
+*/
+int acceptWrapper(int* clientSocket,
+		   int* serverSocket,
+		   struct sockaddr_in* clientAddress)
+{
+  socklen_t clientAddressLen = sizeof(*clientAddress);
+  
+  *clientSocket = accept(*serverSocket,
+			 (struct sockaddr*)*(&clientAddress),
+			 &clientAddressLen);
+
+  if(*clientSocket == -1)
+    {
+      perror("Accept Failed");
+      close(*serverSocket);
+      exit(EXIT_FAILURE);
+    }
+  return *clientSocket;
+} // end of "acceptWrapper"
+
+
+
+/*
+  Function:
+   recvWrapper
+
+  Description:
+   Attempts to read data from the client storing it in the provided buffer.  If there
+   is any error in the read, the error is handled with a cleanup, the error is prompted
+   to stdout and the program exits with a failure code.
+   
+  Input:
+   clientSocket         - A pointer to an integer representing  aserver socket file
+                          descriptor.
+
+   serverSocket         - A pointer to an integer representing a client socket file
+                          descriptor.
+
+  Output:
+   int                  - The number of total bytes read from the client.
+*/
+int recvWrapper(int* clientSocket,
+		 int* serverSocket,
+		 char* buff,
+		 const int buffSize,
+		 const int flag)
+{
+  int bytesRead;
+  
+  bytesRead = recv(*clientSocket, buff, buffSize, flag);
+  
+  if(bytesRead  == -1)
+    {
+      perror("recv() failed");
+      close(*clientSocket);
+      close(*serverSocket);
+      exit(EXIT_FAILURE);
+    }
+
+  return bytesRead;
+} // end of "recvWrapper"
+
+
+
+/*
+  Function:
+   fopenServerWrapper
+
+  Description:
+   Attempts to open a file for writing, in this case on the server.  If there is an
+   error opening the file, a cleanup is triggered closing the open socket file 
+   descriptors, an error is prompted to stdout,  and the program exits with 
+   an error code.
+
+  Input:
+   clientSocket         - A pointer to an integer representing a server socket file
+                          descriptor.
+
+   serverSocket         - A pointer to an integer representing a client socket file
+                          descriptor.
+
+   saveFile             - a pointer to a pointer to a FILE type that will be used
+                          to store the address of an opened file.
+
+   fileName             - A pointer to a char containing the filename/path to open.
+
+   mode                 - A pointer to a char containing the mode in which the file
+                          should be opened.
+
+  Output:
+   FILE*                - A pointer to a FILE type containing the file
+                          descriptor of the open file.
+*/
+FILE* fopenServerWrapper(int* clientSocket,
+			 int* serverSocket,
+			 FILE** saveFile,
+			 char* fileName,
+			 char* mode)
+{
+  *saveFile = fopen(fileName, mode);
+  
+  if(*saveFile == NULL)
+    {
+      perror("fopen() failed");
+      close(*clientSocket);
+      close(*serverSocket);
+      exit(EXIT_FAILURE);
+    }
+
+  return *saveFile;
+} // end of "fopenServerWrapper"
