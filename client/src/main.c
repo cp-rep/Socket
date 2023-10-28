@@ -15,6 +15,8 @@
 #include <sys/socket.h>
 #include "sockets.h"
 
+#define _TRUE 1
+#define _FALSE 0
 #define _SERVERIP "127.0.0.1"
 #define _SERVERPORT 8000
 #define _PATTERN "Pattern is: ./client [-m, -f] where 'm' is for message and 'f' for file\n"
@@ -55,21 +57,48 @@ int main(int argc, char** argv)
   
   if(strcmp(argv[1], "-m") == 0)
     {
-      // attempt to send message to server
-      const char* message = "from client";
-      send(clientSocket, message, strlen(message), 0);
+      const char* message = "Hi server.";
+      int returnVal;
+      char response[256];
+      int bytesRead;
+      
+      // attempt to send message to server      
+      returnVal = send(clientSocket, message, strlen(message), 0);
 
       // wait for response
-      char response[256];
-      int bytesRead = recv(clientSocket, response, sizeof(response), 0);
+      bytesRead = recv(clientSocket, response, sizeof(response), 0);
 
       //print response
       response[bytesRead] = 0;
-      fprintf(stdout, "Server Response: %s\n", response);
+      fprintf(stdout, "From server: %s\n", response);
     }
   else if(strcmp(argv[1], "-f") == 0)
     {
-      
+      const char* fileName = "file.txt";      
+      char buffer[1];
+      size_t bytesRead;
+      FILE* inFile;
+
+      // try opening file for reading
+      inFile = fopen(fileName, "r");
+      if(inFile == NULL)
+	{
+	  perror("fopen() failed");
+	  close(clientSocket);
+	  exit(EXIT_FAILURE);
+	}
+
+      // send file data from open file to server byte by byte
+      while((bytesRead = fread(buffer, 1, sizeof(buffer), inFile)) > 0)
+	{
+	  if(send(clientSocket, buffer, bytesRead, 0) == -1)
+	    {
+	      perror("Sending data failed");
+	      break;
+	    }
+	}
+
+      fclose(inFile);
     }
   
   // clean up
