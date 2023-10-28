@@ -51,7 +51,7 @@ int main(int argc, char** argv)
   struct sockaddr_in clientAddress;
   socklen_t clientAddressLen;
 
-  // creat the socket
+  // create the socket
   serverSocket = createStreamSocketWrapper();
 
   // define server address IPv4 data
