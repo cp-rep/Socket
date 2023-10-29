@@ -38,7 +38,7 @@ size_t recvWrapperServer(int* clientSocket,
 FILE* fopenServerWrapper(int* clientSocket,
 			 int* serverSocket,
 			 FILE** saveFile,
-			 char* fileName,
+			 const char* fileName,
 			 const char* mode);
 size_t recvWrapperClient(int* clientSocket,
 		      char* buff,
