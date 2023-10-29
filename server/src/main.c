@@ -34,14 +34,18 @@ int main(int argc, char** argv)
 {
   if(argc == 1)
     {
-      fprintf(stderr, "Not enough arguments.\n");
-      fprintf(stderr, _PATTERN);
+      fprintf(stderr,
+	      "Not enough arguments.\n");
+      fprintf(stderr,
+	      _PATTERN);
       exit(EXIT_FAILURE);
     }
   else if(argc > 2)
     {
-      fprintf(stderr, "Too many arguments.\n");
-      fprintf(stderr, _PATTERN);
+      fprintf(stderr,
+	      "Too many arguments.\n");
+      fprintf(stderr,
+	      _PATTERN);
       exit(EXIT_FAILURE);
     }
 
@@ -68,7 +72,9 @@ int main(int argc, char** argv)
 		    _QUEUELEN);
 
   // prompt stdout that the server is now listening
-  fprintf(stdout, "Servering listening on port %d...\n", _SERVERPORT);
+  fprintf(stdout,
+	  "Servering listening on port %d...\n",
+	  _SERVERPORT);
 
   // accept and handle incoming connections
   acceptWrapper(&clientSocket,
@@ -99,7 +105,9 @@ int main(int argc, char** argv)
       buff[bytesRead] = 0;
 
       // print received message to stdout
-      fprintf(stdout, "From client:  %s\n", buff);
+      fprintf(stdout,
+	      "From client:  %s\n",
+	      buff);
     }
   else if(strcmp(argv[1], "-f") == 0)
     {
