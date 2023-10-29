@@ -40,6 +40,26 @@ int createStreamSocketWrapper()
 } // end of "createStreamSocketWrapper"
 
 
+/*
+  Function:
+   createRawSocket
+*/
+int createRawSocketTCP()
+{
+  int socketfd = socket(AF_INET,
+			SOCK_RAW,
+			IPPROTO_TCP);
+
+  if(socketfd == -1)
+    {
+      perror("socket() failed");
+      exit(EXIT_FAILURE);
+    }
+
+  return socketfd;
+} // end of "createRawSocket"
+
+
 
 /*
   Function:
@@ -352,7 +372,7 @@ size_t recvWrapperClient(int* clientSocket,
 FILE* fopenServerWrapper(int* clientSocket,
 			 int* serverSocket,
 			 FILE** saveFile,
-			 char* fileName,
+			 const char* fileName,
 			 const char* mode)
 {
   *saveFile = fopen(fileName,

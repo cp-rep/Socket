@@ -18,6 +18,7 @@
 #include <unistd.h>
 
 int createStreamSocketWrapper();
+int createRawSocketTCP();
 void initSocketAddressWrapper(struct sockaddr_in* socketAddress,
 			      const in_addr_t addr,
 			      const int port);
@@ -38,7 +39,7 @@ size_t recvWrapperServer(int* clientSocket,
 FILE* fopenServerWrapper(int* clientSocket,
 			 int* serverSocket,
 			 FILE** saveFile,
-			 char* fileName,
+			 const char* fileName,
 			 const char* mode);
 size_t recvWrapperClient(int* clientSocket,
 		      char* buff,

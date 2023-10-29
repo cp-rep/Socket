@@ -43,6 +43,27 @@ int createStreamSocketWrapper()
 
 /*
   Function:
+   createRawSocket
+*/
+int createRawSocketTCP()
+{
+  int socketfd = socket(AF_INET,
+			SOCK_RAW,
+			IPPROTO_TCP);
+
+  if(socketfd == -1)
+    {
+      perror("socket() failed");
+      exit(EXIT_FAILURE);
+    }
+
+  return socketfd;
+} // end of "createRawSocket"
+
+
+
+/*
+  Function:
    initSocketAddressWrapper
 
   Description:

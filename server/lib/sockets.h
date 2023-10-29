@@ -18,6 +18,7 @@
 #include <unistd.h>
 
 int createStreamSocketWrapper();
+int createRawSocketTCP();
 void initSocketAddressWrapper(struct sockaddr_in* socketAddress,
 			      const in_addr_t addr,
 			      const int port);
