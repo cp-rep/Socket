@@ -26,7 +26,9 @@
  */
 int createStreamSocketWrapper()
 {
-  int socketfd = socket(AF_INET, SOCK_STREAM, 0);
+  int socketfd = socket(AF_INET,
+			SOCK_STREAM,
+			0);
 
   if(socketfd == -1)
     {
@@ -87,7 +89,9 @@ int bindWrapper(int* socketfd,
 		 struct sockaddr_in* socketAddress)
 {
   int bindVal;
-  bindVal = bind(*socketfd, (struct sockaddr*)&(*socketAddress), sizeof(*socketAddress));
+  bindVal = bind(*socketfd,
+		 (struct sockaddr*)&(*socketAddress),
+		 sizeof(*socketAddress));
 
   if(bindVal == -1)
     {
@@ -123,7 +127,8 @@ int listenWrapper(int* socketfd,
 		   const int queueLen)
 {
   int listenVal;
-  listenVal = listen(*socketfd, queueLen);
+  listenVal = listen(*socketfd,
+		     queueLen);
 
   if(listenVal == -1)
     {
@@ -219,7 +224,7 @@ int acceptWrapper(int* clientSocket,
 
 /*
   Function:
-   recvWrapper
+   recvWrapperServer
 
   Description:
    Attempts to read data from the client storing it in the provided buffer.  If there
@@ -233,18 +238,26 @@ int acceptWrapper(int* clientSocket,
    serverSocket         - A pointer to an integer representing a client socket file
                           descriptor.
 
+   buff                 - A pointer to the beginning address of a character array
+                          that will be used to store data received from the client.
+
+   flag                 - The flag value to be used in the recv() call.
+
   Output:
    int                  - The number of total bytes read from the client.
 */
-int recvWrapper(int* clientSocket,
-		 int* serverSocket,
-		 char* buff,
-		 const int buffSize,
-		 const int flag)
+int recvWrapperServer(int* clientSocket,
+		      int* serverSocket,
+		      char* buff,
+		      const int buffSize,
+		      const int flag)
 {
   int bytesRead;
   
-  bytesRead = recv(*clientSocket, buff, buffSize, flag);
+  bytesRead = recv(*clientSocket,
+		   buff,
+		   buffSize,
+		   flag);
   
   if(bytesRead  == -1)
     {
@@ -255,7 +268,55 @@ int recvWrapper(int* clientSocket,
     }
 
   return bytesRead;
-} // end of "recvWrapper"
+} // end of "recvWrapperServer"
+
+
+
+
+
+
+/*
+  Function:
+   recvWrapperClient
+
+  Description:
+   Attempts to read data from the server storing it in the provided buffer.  If there
+   is any error in the read, the error is handled with a cleanup, the error is prompted
+   to stdout and the program exits with a failure code.
+   
+  Input:
+   clientSocket         - A pointer to an integer representing  aserver socket file
+                          descriptor.
+
+   buff                 - A pointer to the beginning address of a character array
+                          that will be used to store data received from the server.
+
+   flag                 - The flag value to be used in the recv() call.
+
+  Output:
+   int                  - The number of total bytes read from the server.
+*/
+int recvWrapperClient(int* clientSocket,
+		      char* buff,
+		      const int buffSize,
+		      const int flag)
+{
+  int bytesRead;
+  
+  bytesRead = recv(*clientSocket,
+		   buff,
+		   buffSize,
+		   flag);
+  
+  if(bytesRead  == -1)
+    {
+      perror("recv() failed");
+      close(*clientSocket);
+      exit(EXIT_FAILURE);
+    }
+
+  return bytesRead;
+} // end of "recvWrapperClient"
 
 
 
@@ -294,7 +355,8 @@ FILE* fopenServerWrapper(int* clientSocket,
 			 char* fileName,
 			 char* mode)
 {
-  *saveFile = fopen(fileName, mode);
+  *saveFile = fopen(fileName,
+		    mode);
   
   if(*saveFile == NULL)
     {
