@@ -214,14 +214,17 @@ int main(int argc, char** argv)
 
       {
 	int socketfdPacket;
-
-
       
 	// open new raw socket for TCP packet transfer
 	socketfdPacket = createRawSocketTCP();
+	
 
-	//
+
+	close(socketfdPacket);
       }
+
+
+      
     }
   else
     {
@@ -231,7 +234,8 @@ int main(int argc, char** argv)
       bytesSent = send(clientSocket,
 		       optionFailed,
 		       strlen(optionFailed),
-		       0);      
+		       0);
+      
       fprintf(stderr, "Something went wrong with the option received from client.\n");
 
     }

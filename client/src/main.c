@@ -17,6 +17,7 @@
 
 #define _TRUE 1
 #define _FALSE 0
+#define _HOSTIP "127.0.0.1"
 #define _SERVERIP "127.0.0.1"
 #define _SERVERPORT 8000
 #define _PATTERN "Pattern is: ./client [-m, -f] where 'm' is for message and 'f' for file\n"
@@ -214,10 +215,33 @@ int main(int argc, char** argv)
 			      0);
 
       {
-	
-      }
+	int socketfdPacket;
+	char packet[sizeof(struct iphdr) + sizeof(struct tcphdr)];
 
-      
+	// sanity zero out the packet buffer
+	for(int i = 0; i < sizeof(packet); i++)
+	  {
+	    packet[i] = 0;
+	  }
+
+	// create the socket
+	socketfdPacket = createRawSocketTCP();
+	
+	// point the ip header to the start of the packet
+	struct iphdr* ipHeader = (struct iphdr*)packet;
+
+	// point the tcp header directly after the ip header since we're
+	// sending empty packet
+	struct tcphdr* tcpHeader = (struct tcphdr*)(packet + sizeof(struct iphdr));
+
+	// define the ip header with ip details
+	defineIPHeader(ipHeader,
+		       _HOSTIP,
+		       _SERVERIP);
+	printIPHeader(ipHeader);
+
+	close(socketfdPacket);
+      }
     }
   
   // clean up
