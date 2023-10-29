@@ -51,6 +51,9 @@ int main(int argc, char** argv)
   struct sockaddr_in serverAddress;
   struct sockaddr_in clientAddress;
   socklen_t addr_size;
+  int returnVal;
+  char response[256];
+  int bytesRead;
 
   // define client/server connection
   clientSocket = createStreamSocketWrapper();
@@ -58,33 +61,69 @@ int main(int argc, char** argv)
 			   inet_addr(_SERVERIP),
 			   _SERVERPORT);
 
-  // connect to server
+  // 1. connect to server
   connectWrapper(&clientSocket,
 		 &serverAddress);
+
+  // 2. wait for response
+  bytesRead = recvWrapperClient(&clientSocket,
+				response,
+				sizeof(response),
+				0);
+
+  response[bytesRead] = 0;
+  fprintf(stdout,
+	  "%s\n",
+	  response);
+
+  // 3. send command option to server
+  returnVal = send(clientSocket,
+		   argv[1],
+		   strlen(argv[1]),
+		   0);
+
+  // 4. receive that the server read the sent option successfully
+  bytesRead = recvWrapperClient(&clientSocket,
+				response,
+				sizeof(response),
+				0);
+  response[bytesRead] = 0;
+
+  // confirm the client provided a correct command line option
+  if(strcmp(response, "Failed to read option.") == 0)
+    {
+      close(clientSocket);
+      fprintf(stderr, "Something went wrong with the option sent to server.\n");
+      exit(EXIT_FAILURE);
+    }
+    else
+      {
+	fprintf(stdout,
+		"%s\n",
+		response);
+      }
   
   if(strcmp(argv[1], "-m") == 0)
     {
       const char* message = "Hi server.";
-      int returnVal;
-      char response[256];
-      int bytesRead;
-      
-      // attempt to send message to server      
+      //const char* message = "q";      
+
+      // 5. attempt to send message to server      
       returnVal = send(clientSocket,
 		       message,
 		       strlen(message),
 		       0);
 
-      // wait for response
-      bytesRead = recv(clientSocket,
-		       response,
-		       sizeof(response),
-		       0);
+      // 6. wait for response
+      bytesRead = recvWrapperClient(&clientSocket,
+				    response,
+				    sizeof(response),
+				    0);
 
       //print response
       response[bytesRead] = 0;
       fprintf(stdout,
-	      "From server: %s\n",
+	      "Server: %s\n",
 	      response);
     }
   else if(strcmp(argv[1], "-f") == 0)
@@ -94,6 +133,7 @@ int main(int argc, char** argv)
       size_t bytesRead;
       FILE* inFile;
       int sendVal;
+      char etx[2] = { 3, '\0' };
 
       // try opening file for reading
       inFile = fopen(fileName,
@@ -113,30 +153,55 @@ int main(int argc, char** argv)
 			    1,
 			    sizeof(buffer),
 			    inFile);
-
-	  // test that data wass successfully read
+	  // test that data was successfully read from file
 	  if(bytesRead == 0)
 	    {
+
+	      // 6. attempt send ETX to server
+	      returnVal = send(clientSocket,
+			       etx,
+			       strlen(etx),
+			       0);
+
+	      if(returnVal == -1)
+		{
+		  perror("send() failed");
+		}
+	      
+	      // 7. attempt to receive success message
+	      bytesRead = recvWrapperClient(&clientSocket,
+					    response,
+					    sizeof(response),
+					    0);
+
+	      response[bytesRead] = 0;
+	      fprintf(stdout,
+		      "Server: %s\n",
+		      response);
 	      break;
 	    }
 
-	  // send read data to server
+	  // 5. attempt to send data to server
 	  sendVal = send(clientSocket,
 			 buffer,
 			 bytesRead,
 			 0);
 
-	  // test for send success
+	  // test for send failure
 	  if(sendVal == -1)
 	    {
 	      perror("send() failed");
 	      break;
+	      fclose(inFile);
+	      close(clientSocket);
+	      exit(EXIT_FAILURE);
 	    }
 	}
-
+      
+      // close opened file
       fclose(inFile);
     }
-  
+
   // clean up
   close(clientSocket);
   
