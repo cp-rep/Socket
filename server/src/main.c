@@ -4,8 +4,8 @@
 
   Description:
    The main driver file for the server side of client/server data transmission.
-   The server accepts incoming connections to read buffer of data containing
-   a message, or receiving a file from the client connection.
+   The server accepts incoming connections to read a buffer of data containing
+   a message or for receiving a file from the client connection.
 */
 #include <arpa/inet.h>
 #include <stdio.h>
@@ -66,7 +66,8 @@ int main(int argc, char** argv)
   // set socket into listening mode
   listenWrapper(&serverSocket,
 		    _QUEUELEN);
-  
+
+  // prompt stdout that the server is now listening
   fprintf(stdout, "Servering listening on port %d...\n", _SERVERPORT);
 
   // accept and handle incoming connections
@@ -77,12 +78,15 @@ int main(int argc, char** argv)
   if(strcmp(argv[1], "-m") == 0)
     {
       const char* toClient = "You have successfully connected to the server.";
-      int returnVal;
+      int sendVal;
       char buff[256];
       int bytesRead;
 
       // attempt to send message to client      
-      returnVal = send(clientSocket, toClient, strlen(toClient), 0);
+      sendVal = send(clientSocket,
+		       toClient,
+		       strlen(toClient),
+		       0);
       
       // attempt to receive message from client
       bytesRead = recvWrapper(&clientSocket,
@@ -117,7 +121,10 @@ int main(int argc, char** argv)
       while(_TRUE)
 	{
 	  // receive data
-	  bytesRead = recv(clientSocket, buff, sizeof(buff), 0);
+	  bytesRead = recv(clientSocket,
+			   buff,
+			   sizeof(buff),
+			   0);
 
 	  // check for error
 	  if(bytesRead < 0)
