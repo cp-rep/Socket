@@ -9,6 +9,9 @@
 #ifndef SOCKETS_H
 #define SOCKETS_H
 #include <arpa/inet.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -49,4 +52,8 @@ size_t sendWrapper(int* clientSocket,
 		const char* buff,		   
 		const int buffSize,
 		const int flag);
+void defineIPHeader(struct iphdr* ipHeader,
+		    const char* sourceAddress,
+		    const char* destAddress);
+void printIPHeader(struct iphdr* ipHeader);
 #endif

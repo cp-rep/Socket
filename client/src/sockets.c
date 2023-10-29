@@ -40,6 +40,7 @@ int createStreamSocketWrapper()
 } // end of "createStreamSocketWrapper"
 
 
+
 /*
   Function:
    createRawSocket
@@ -437,3 +438,75 @@ size_t sendWrapper(int* clientSocket,
   
   return bytesSent;
 } // end of "sendWrapper"
+
+
+
+/*
+  Function:
+   defineIPHeader
+
+  Description:
+   Defines the incoming ip header for a tcp packet.
+
+  Input:
+   ipHeader             - A pointer to a struct iphdr type that is currently
+                          undefined.
+
+   sourceAddress        - A pointer to a const char address that should contain
+                          a null terminated c-string of the source address.
+
+   destAddress          - A pointer to a const char address that should contain
+                          a null terminated c-string of the destination address.
+
+  Output:
+   NONE
+*/
+void defineIPHeader(struct iphdr* ipHeader,
+		    const char* sourceAddress,
+		    const char* destAddress)
+{
+  ipHeader->ihl = 5;  
+  ipHeader->version = 4;
+  ipHeader->tos = 0;
+  ipHeader->tot_len = htons(sizeof(struct iphdr) + sizeof(struct tcphdr));
+  ipHeader->id = htons(11223);
+  ipHeader->frag_off = 0;
+  ipHeader->ttl = 64;
+  ipHeader->protocol = IPPROTO_TCP;
+  ipHeader->check = htons(9999);
+  ipHeader->saddr = inet_addr(sourceAddress);
+  ipHeader->daddr = inet_addr(destAddress);
+} // end of "defineIPHeader"
+
+
+
+/*
+  Function:
+   printIPHeader
+
+  Description:
+   Prints a struct iphdr type to stdout.  Network byte order is handled where needed
+   for correct printing.
+
+  Input:
+   ipHeader             - A pointer to a struct iphdr type to be printed to stdout.
+
+  Output:
+   NONE
+*/
+void printIPHeader(struct iphdr* ipHeader)
+{
+  fprintf(stdout, "** IP HEADER **\n");
+  fprintf(stdout, "ihl: %u\n", ipHeader->ihl);
+  fprintf(stdout, "v: %u\n", ipHeader->version);  
+  fprintf(stdout, "tos: %u\n", ipHeader->tos);
+  fprintf(stdout, "len: %u\n", ntohs(ipHeader->tot_len));
+  fprintf(stdout, "id: %u\n", ntohs(ipHeader->id));
+  fprintf(stdout, "offset: %u\n", ipHeader->frag_off);
+  fprintf(stdout, "ttl: %u\n", ipHeader->ttl);
+  fprintf(stdout, "protocol: %u\n", ipHeader->protocol);
+  fprintf(stdout, "checksum: %u\n", ntohs(ipHeader->check));
+  fprintf(stdout, "source ip: %s\n", inet_ntoa(*(struct in_addr*)&ipHeader->saddr));
+  fprintf(stdout, "destination ip: %s\n",
+	  inet_ntoa(*(struct in_addr*)&ipHeader->daddr));
+} // end of "printIPHeader"
