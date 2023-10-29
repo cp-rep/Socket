@@ -55,5 +55,9 @@ size_t sendWrapper(int* clientSocket,
 void defineIPHeader(struct iphdr* ipHeader,
 		    const char* sourceAddress,
 		    const char* destAddress);
-void printIPHeader(struct iphdr* ipHeader);
+void defineTCPHeader(struct tcphdr* tcpHeader,
+		     const int sourcePort,
+		     const int destPort);
+void printIPHeaderClient(struct iphdr* ipHeader);
+void printTCPHeaderClient(struct tcphdr* tcpHeader);
 #endif

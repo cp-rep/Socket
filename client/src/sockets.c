@@ -482,7 +482,45 @@ void defineIPHeader(struct iphdr* ipHeader,
 
 /*
   Function:
-   printIPHeader
+   defineTCPHeader
+
+  Description:
+   Defines the incoming tcp header for a tcp packet.
+
+  Input:
+   tcpHeader            - A pointer to a struct tcphdr type that is currently
+                          undefined.
+
+   sourceAddress        - A constant integer containing the source port to be
+                          defined in the tcp header.
+                          
+
+   destAddress          - A constant integer containing the destination port to
+                          be defined in the tcp header.
+                          
+  Output:
+   NONE
+*/
+void defineTCPHeader(struct tcphdr* tcpHeader,
+		     const int sourcePort,
+		     const int destPort)
+{
+  tcpHeader->source = htons(sourcePort);
+  tcpHeader->dest = htons(destPort);
+  tcpHeader->seq = 0;
+  tcpHeader->ack_seq = 0;
+  tcpHeader->doff = 5;
+  tcpHeader->syn = 1;
+  tcpHeader->window = htons(5840);
+  tcpHeader->check = htons(9999);
+  tcpHeader->urg_ptr = 0;
+} // end of "defineTCPHeader"
+
+
+
+/*
+  Function:
+   printIPHeaderClient
 
   Description:
    Prints a struct iphdr type to stdout.  Network byte order is handled where needed
@@ -494,7 +532,7 @@ void defineIPHeader(struct iphdr* ipHeader,
   Output:
    NONE
 */
-void printIPHeader(struct iphdr* ipHeader)
+void printIPHeaderClient(struct iphdr* ipHeader)
 {
   fprintf(stdout, "** IP HEADER **\n");
   fprintf(stdout, "ihl: %u\n", ipHeader->ihl);
@@ -509,4 +547,35 @@ void printIPHeader(struct iphdr* ipHeader)
   fprintf(stdout, "source ip: %s\n", inet_ntoa(*(struct in_addr*)&ipHeader->saddr));
   fprintf(stdout, "destination ip: %s\n",
 	  inet_ntoa(*(struct in_addr*)&ipHeader->daddr));
-} // end of "printIPHeader"
+} // end of "printIPHeaderClient"
+
+
+
+
+/*
+  Function:
+   printTCPHeaderClient
+
+  Description:
+   Prints a struct tcphr type to stdout.  Network byte order is handled where needed
+   for correct printing.
+
+  Input:
+   tcpHeader             - A pointer to a struct tcphdr type to be printed to stdout.
+
+  Output:
+   NONE
+*/
+void printTCPHeaderClient(struct tcphdr* tcpHeader)
+{
+  fprintf(stdout, "**TCP HEADER **\n");
+  fprintf(stdout, "source: %u\n", ntohs(tcpHeader->source));
+  fprintf(stdout, "dest: %u\n", ntohs(tcpHeader->dest));
+  fprintf(stdout, "seq: %u\n", tcpHeader->seq);
+  fprintf(stdout, "ack_seq: %u\n", tcpHeader->ack_seq);
+  fprintf(stdout, "doff: %u\n", tcpHeader->doff);
+  fprintf(stdout, "syn: %u\n", tcpHeader->syn);
+  fprintf(stdout, "win: %u\n", ntohs(tcpHeader->window));
+  fprintf(stdout, "check: %u\n", ntohs(tcpHeader->check));
+  fprintf(stdout, "urg_ptr: %u\n", tcpHeader->urg_ptr);
+} // end of "printTCPHeaderClient"
