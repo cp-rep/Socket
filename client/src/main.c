@@ -50,10 +50,13 @@ int main(int argc, char** argv)
 
   // define client/server connection
   clientSocket = createStreamSocketWrapper();
-  initSocketAddressWrapper(&serverAddress, inet_addr(_SERVERIP), _SERVERPORT);
+  initSocketAddressWrapper(&serverAddress,
+			   inet_addr(_SERVERIP),
+			   _SERVERPORT);
 
   // connect to server
-  connectWrapper(&clientSocket, &serverAddress);
+  connectWrapper(&clientSocket,
+		 &serverAddress);
   
   if(strcmp(argv[1], "-m") == 0)
     {
@@ -63,24 +66,34 @@ int main(int argc, char** argv)
       int bytesRead;
       
       // attempt to send message to server      
-      returnVal = send(clientSocket, message, strlen(message), 0);
+      returnVal = send(clientSocket,
+		       message,
+		       strlen(message),
+		       0);
 
       // wait for response
-      bytesRead = recv(clientSocket, response, sizeof(response), 0);
+      bytesRead = recv(clientSocket,
+		       response,
+		       sizeof(response),
+		       0);
 
       //print response
       response[bytesRead] = 0;
-      fprintf(stdout, "From server: %s\n", response);
+      fprintf(stdout,
+	      "From server: %s\n",
+	      response);
     }
   else if(strcmp(argv[1], "-f") == 0)
     {
-      const char* fileName = "file.txt";      
+      const char* fileName = "file.txt";
       char buffer[1];
       size_t bytesRead;
       FILE* inFile;
+      int sendVal;
 
       // try opening file for reading
-      inFile = fopen(fileName, "r");
+      inFile = fopen(fileName,
+		     "r");
       if(inFile == NULL)
 	{
 	  perror("fopen() failed");
@@ -89,11 +102,25 @@ int main(int argc, char** argv)
 	}
 
       // send file data from open file to server byte by byte
-      while((bytesRead = fread(buffer, 1, sizeof(buffer), inFile)) > 0)
+      while(_TRUE)
 	{
-	  if(send(clientSocket, buffer, bytesRead, 0) == -1)
+	  bytesRead = fread(buffer,
+			    1,
+			    sizeof(buffer),
+			    inFile);
+	  if(bytesRead == 0)
 	    {
-	      perror("Sending data failed");
+	      break;
+	    }
+	  
+	  sendVal = send(clientSocket,
+			 buffer,
+			 bytesRead,
+			 0);
+	  
+	  if(sendVal == -1)
+	    {
+	      perror("send() failed");
 	      break;
 	    }
 	}
