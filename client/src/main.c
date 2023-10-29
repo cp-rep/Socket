@@ -203,7 +203,23 @@ int main(int argc, char** argv)
       // close opened file
       fclose(inFile);
     }
+  else if(strcmp(argv[1], "-p") == 0)
+    {
+      const char* toServer = "Sending packet.";
+      
+      // 5. attempt to send message to server
+      bytesSent = sendWrapper(&clientSocket,
+			      toServer,
+			      strlen(toServer),
+			      0);
 
+      {
+	
+      }
+
+      
+    }
+  
   // clean up
   close(clientSocket);
   

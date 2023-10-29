@@ -21,6 +21,7 @@
 #define _FALSE 0
 #define _SERVERIP "127.0.0.1"
 #define _SERVERPORT 8000
+#define _PACKETPORT 8080
 #define _QUEUELEN 10
 
 
@@ -115,7 +116,6 @@ int main(int argc, char** argv)
 			      toClientMsg,
 			      strlen(toClientMsg),
 			      0);
-	  
     }
   else if(strcmp(buff, "-f") == 0)
     {
@@ -172,9 +172,9 @@ int main(int argc, char** argv)
 
 	  // write data to file
 	  bytesWritten = fwrite(buff,
-			    1,
-			    bytesRead,
-			    saveFile);
+				1,
+				bytesRead,
+				saveFile);
 
 	  // test for bad write
 	  if(bytesWritten < 0)
@@ -187,6 +187,42 @@ int main(int argc, char** argv)
       // close opened file
       fclose(saveFile);
     }
+  else if(strcmp(buff, "-p") == 0)
+    {
+      const char* fileMsg = "The server will now attempt to receive a packet.";
+
+      // 4. attempt to send message
+      bytesSent = sendWrapper(&clientSocket,
+			      fileMsg,
+			      strlen(fileMsg),
+			      0);
+
+      // 5. attempt to receive message
+      bytesRead = recvWrapperServer(&clientSocket,
+				    &serverSocket,
+				    buff,
+				    sizeof(buff),
+				    0);
+
+      // null terminate the received message
+      buff[bytesRead] = 0;
+
+      // print received message to stdout
+      fprintf(stdout,
+	      "Client:  %s\n",
+	      buff);
+
+      {
+	int socketfdPacket;
+
+
+      
+	// open new raw socket for TCP packet transfer
+	socketfdPacket = createRawSocketTCP();
+
+	//
+      }
+    }
   else
     {
       const char* optionFailed = "Failed to read option.";
@@ -197,6 +233,7 @@ int main(int argc, char** argv)
 		       strlen(optionFailed),
 		       0);      
       fprintf(stderr, "Something went wrong with the option received from client.\n");
+
     }
 
   // clean up
