@@ -232,7 +232,7 @@ int acceptWrapper(int* clientSocket,
    to stdout and the program exits with a failure code.
    
   Input:
-   clientSocket         - A pointer to an integer representing  aserver socket file
+   clientSocket         - A pointer to an integer representing a server socket file
                           descriptor.
 
    serverSocket         - A pointer to an integer representing a client socket file
@@ -246,13 +246,13 @@ int acceptWrapper(int* clientSocket,
   Output:
    int                  - The number of total bytes read from the client.
 */
-int recvWrapperServer(int* clientSocket,
+size_t recvWrapperServer(int* clientSocket,
 		      int* serverSocket,
 		      char* buff,
 		      const int buffSize,
 		      const int flag)
 {
-  int bytesRead;
+  size_t bytesRead;
   
   bytesRead = recv(*clientSocket,
 		   buff,
@@ -285,7 +285,7 @@ int recvWrapperServer(int* clientSocket,
    to stdout and the program exits with a failure code.
    
   Input:
-   clientSocket         - A pointer to an integer representing  aserver socket file
+   clientSocket         - A pointer to an integer representing a server socket file
                           descriptor.
 
    buff                 - A pointer to the beginning address of a character array
@@ -296,12 +296,12 @@ int recvWrapperServer(int* clientSocket,
   Output:
    int                  - The number of total bytes read from the server.
 */
-int recvWrapperClient(int* clientSocket,
+size_t recvWrapperClient(int* clientSocket,
 		      char* buff,
 		      const int buffSize,
 		      const int flag)
 {
-  int bytesRead;
+  size_t bytesRead;
   
   bytesRead = recv(*clientSocket,
 		   buff,
@@ -353,7 +353,7 @@ FILE* fopenServerWrapper(int* clientSocket,
 			 int* serverSocket,
 			 FILE** saveFile,
 			 char* fileName,
-			 char* mode)
+			 const char* mode)
 {
   *saveFile = fopen(fileName,
 		    mode);
@@ -368,3 +368,52 @@ FILE* fopenServerWrapper(int* clientSocket,
 
   return *saveFile;
 } // end of "fopenServerWrapper"
+
+
+
+
+/*
+  Function:
+   sendWrapper
+
+  Description:
+   Attempts to send data to server or client. If there is any error in the send, 
+   the error is handled with a cleanup, it is prompted to stdout, and the program 
+   exits with a failure code.
+   
+  Input:
+   clientSocket         - A pointer to an integer representing a server socket file
+                          descriptor.
+
+   buff                 - A pointer to the beginning address of a character array
+                          that will be used to store data received from the server.
+
+   buffSize             - A constant integer containing the size of the buffer to
+                          send.
+                          
+   flag                 - The flag value to be used in the send() call.
+
+  Output:
+   int                  - The number of total bytes sent.
+*/
+size_t sendWrapper(int* clientSocket,
+		   const char* buff,
+		   const int buffSize,
+		   const int flag)
+{
+  size_t bytesSent;
+
+  bytesSent = send(*clientSocket,
+		   buff,
+		   buffSize,
+		   flag);
+  
+  if(bytesSent == -1)
+    {
+      perror("send() failed");
+      close(*clientSocket);
+      exit(EXIT_FAILURE);
+    }
+  
+  return bytesSent;
+} // end of "sendWrapper"

@@ -30,7 +30,7 @@ int connectWrapper(int* clientSocket,
 int acceptWrapper(int* clientSocket,
 		   int* serverSocket,
 		   struct sockaddr_in* clientAddress);
-int recvWrapperServer(int* clientSocket,
+size_t recvWrapperServer(int* clientSocket,
 		      int* serverSocket,
 		      char* responseBuff,
 		      const int buffSize,
@@ -39,9 +39,13 @@ FILE* fopenServerWrapper(int* clientSocket,
 			 int* serverSocket,
 			 FILE** saveFile,
 			 char* fileName,
-			 char* mode);
-int recvWrapperClient(int* clientSocket,
+			 const char* mode);
+size_t recvWrapperClient(int* clientSocket,
 		      char* buff,
 		      const int buffSize,
 		      const int flag);
+size_t sendWrapper(int* clientSocket,
+		const char* buff,		   
+		const int buffSize,
+		const int flag);
 #endif
