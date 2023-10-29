@@ -20,6 +20,8 @@
 #define _HOSTIP "127.0.0.1"
 #define _SERVERIP "127.0.0.1"
 #define _SERVERPORT 8000
+#define _CLIENTPACKETPORT 9000
+#define _SERVERPACKETPORT 9000
 #define _PATTERN "Pattern is: ./client [-m, -f] where 'm' is for message and 'f' for file\n"
 
 
@@ -231,15 +233,27 @@ int main(int argc, char** argv)
 	struct iphdr* ipHeader = (struct iphdr*)packet;
 
 	// point the tcp header directly after the ip header since we're
-	// sending empty packet
+	// sending an empty packet
 	struct tcphdr* tcpHeader = (struct tcphdr*)(packet + sizeof(struct iphdr));
 
-	// define the ip header with ip details
+	// define the ip header
 	defineIPHeader(ipHeader,
 		       _HOSTIP,
 		       _SERVERIP);
-	printIPHeader(ipHeader);
 
+	// define the tcp header
+	defineTCPHeader(tcpHeader,
+			_CLIENTPACKETPORT,
+			_SERVERPACKETPORT);
+
+	// print them to stdout before sending
+	fprintf(stdout, "\n");
+	fprintf(stdout, "Printing newly defined IP Header and TCP Header.\n");
+	printIPHeaderClient(ipHeader);
+	fprintf(stdout, "\n");
+	printTCPHeaderClient(tcpHeader);
+	fprintf(stdout, "\n");
+	
 	close(socketfdPacket);
       }
     }
