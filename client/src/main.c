@@ -219,6 +219,7 @@ int main(int argc, char** argv)
       {
 	int socketfdPacket;
 	char packet[sizeof(struct iphdr) + sizeof(struct tcphdr)];
+	struct sockaddr_in socketAddress;
 
 	// sanity zero out the packet buffer
 	for(int i = 0; i < sizeof(packet); i++)
@@ -246,13 +247,20 @@ int main(int argc, char** argv)
 			_CLIENTPACKETPORT,
 			_SERVERPACKETPORT);
 
-	// print them to stdout before sending
+	// print ip/tcp headers to stdout before sending to server
 	fprintf(stdout, "\n");
 	fprintf(stdout, "Printing newly defined IP Header and TCP Header.\n");
 	printIPHeaderClient(ipHeader);
 	fprintf(stdout, "\n");
 	printTCPHeaderClient(tcpHeader);
 	fprintf(stdout, "\n");
+
+	// define the server address
+	initSocketAddressWrapper(&socketAddress,
+				 ipHeader->daddr,
+				 tcpHeader->dest);
+	
+	
 	
 	close(socketfdPacket);
       }
