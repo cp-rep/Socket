@@ -22,7 +22,6 @@
 #define _SERVERIP "127.0.0.1"
 #define _SERVERPORT 8000
 #define _QUEUELEN 10
-#define _PATTERN "Pattern is: ./server [-m, -f] where 'm' is for message and 'f' for file\n"
 
 
 
@@ -32,28 +31,15 @@
 */
 int main(int argc, char** argv)
 {
-  if(argc == 1)
-    {
-      fprintf(stderr,
-	      "Not enough arguments.\n");
-      fprintf(stderr,
-	      _PATTERN);
-      exit(EXIT_FAILURE);
-    }
-  else if(argc > 2)
-    {
-      fprintf(stderr,
-	      "Too many arguments.\n");
-      fprintf(stderr,
-	      _PATTERN);
-      exit(EXIT_FAILURE);
-    }
-
   int serverSocket;
   int clientSocket;
   struct sockaddr_in serverAddress;
   struct sockaddr_in clientAddress;
   socklen_t clientAddressLen;
+  int sendVal;
+  char buff[256];
+  int bytesRead;
+
 
   // create the socket
   serverSocket = createStreamSocketWrapper();
@@ -76,40 +62,63 @@ int main(int argc, char** argv)
 	  "Servering listening on port %d...\n",
 	  _SERVERPORT);
 
-  // accept and handle incoming connections
+  // 1. accept and handle incoming connections
   acceptWrapper(&clientSocket,
 		&serverSocket,
 		&clientAddress);
-  
-  if(strcmp(argv[1], "-m") == 0)
-    {
-      const char* toClient = "You have successfully connected to the server.";
-      int sendVal;
-      char buff[256];
-      int bytesRead;
 
-      // attempt to send message to client      
+  const char* toClient = "You have successfully connected to the server.";
+
+  // 2. attempt to let the client know the connection was successful
+  sendVal = send(clientSocket,
+		 toClient,
+		 strlen(toClient),
+		 0);
+  
+  // 3. receive the clients command option
+  bytesRead = recvWrapperServer(&clientSocket,
+				&serverSocket,
+				buff,
+				sizeof(buff),
+				0);
+
+  buff[bytesRead] = 0;
+
+  // test which option the client chose
+  if(strcmp(buff, "-m") == 0)
+    {
+      const char* toClient = "The server will now attempt to read your sent messages.";
+
+      // 4. attempt to send message
       sendVal = send(clientSocket,
-		       toClient,
-		       strlen(toClient),
-		       0);
-      
-      // attempt to receive message from client
-      bytesRead = recvWrapper(&clientSocket,
-			      &serverSocket,
-			      buff,
-			      sizeof(buff),
-			      0);
+		     toClient,
+		     strlen(toClient),
+		     0);
+
+      // 5. attempt to receive message
+      bytesRead = recvWrapperServer(&clientSocket,
+				    &serverSocket,
+				    buff,
+				    sizeof(buff),
+				    0);
 
       // null terminate the received message
       buff[bytesRead] = 0;
 
       // print received message to stdout
       fprintf(stdout,
-	      "From client:  %s\n",
+	      "Client:  %s\n",
 	      buff);
+	  
+      const char* toClient2 = "Hello client";
+      // 6. send message to client
+      sendVal = send(clientSocket,
+		     toClient2,
+		     strlen(toClient2),
+		     0);
+	  
     }
-  else if(strcmp(argv[1], "-f") == 0)
+  else if(strcmp(buff, "-f") == 0)
     {
       char buff[1];
       FILE* saveFile;
@@ -118,6 +127,14 @@ int main(int argc, char** argv)
       char* mode = "w+";
       int writeVal;
 
+      const char* toClient = "The server will now attempt to receive your file.";
+
+      // 4. attempt to send message
+      sendVal = send(clientSocket,
+		     toClient,
+		     strlen(toClient),
+		     0);
+      
       // open file for writing
       fopenServerWrapper(&clientSocket,
 			 &serverSocket,
@@ -125,23 +142,32 @@ int main(int argc, char** argv)
 			 fileName,
 			 mode);
 
-      // loop and receive data from client
+      // loop and receive data
       while(_TRUE)
 	{
-	  // receive data
-	  bytesRead = recv(clientSocket,
-			   buff,
-			   sizeof(buff),
-			   0);
+	  // 5. or 6. - attempt receive data
+	  bytesRead = recvWrapperServer(&clientSocket,
+					&serverSocket,
+					buff,
+					sizeof(buff),
+					0);
+	  buff[bytesRead] = 0;
 
-	  // check for error
-	  if(bytesRead < 0)
+	  // test for ETX from client
+	  if(buff[0] == 3)
 	    {
-	      perror("recv() failed");
+	      const char* toClient3 = "File received successfully.";
+	      
+	      // 7. attempt to send success message
+	      sendVal = send(clientSocket,
+			     toClient3,
+			     strlen(toClient3),
+			     0);	      
 	      break;
 	    }
-	  // test for EOF
-	  else if(bytesRead == 0)
+
+	  // safety test for EOF 
+	  if(bytesRead == 0)
 	    {
 	      break;
 	    }
@@ -151,7 +177,7 @@ int main(int argc, char** argv)
 			    1,
 			    bytesRead,
 			    saveFile);
-	  
+
 	  // test for bad write
 	  if(writeVal < 0)
 	    {
@@ -160,11 +186,24 @@ int main(int argc, char** argv)
 	    }
 	}
 
-      // clean up
+      // close opened file
       fclose(saveFile);
-      close(clientSocket);
-      close(serverSocket);
     }
+  else
+    {
+      const char* optionFailed = "Failed to read option.";
+
+      // 4. attempt to send message
+      sendVal = send(clientSocket,
+		     optionFailed,
+		     strlen(optionFailed),
+		     0);      
+      fprintf(stderr, "Something went wrong with the option received from client.\n");
+    }
+
+  // clean up
+  close(clientSocket);
+  close(serverSocket);
   
   return 0;
 } // end of "main"
