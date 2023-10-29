@@ -36,10 +36,9 @@ int main(int argc, char** argv)
   struct sockaddr_in serverAddress;
   struct sockaddr_in clientAddress;
   socklen_t clientAddressLen;
-  int sendVal;
   char buff[256];
-  int bytesRead;
-
+  size_t bytesSent;
+  size_t bytesRead;
 
   // create the socket
   serverSocket = createStreamSocketWrapper();
@@ -67,13 +66,13 @@ int main(int argc, char** argv)
 		&serverSocket,
 		&clientAddress);
 
-  const char* toClient = "You have successfully connected to the server.";
+  const char* connectMsg = "You have successfully connected to the server.";
 
   // 2. attempt to let the client know the connection was successful
-  sendVal = send(clientSocket,
-		 toClient,
-		 strlen(toClient),
-		 0);
+  bytesSent = sendWrapper(&clientSocket,
+			  connectMsg,
+			  strlen(connectMsg),
+			  0);
   
   // 3. receive the clients command option
   bytesRead = recvWrapperServer(&clientSocket,
@@ -81,19 +80,18 @@ int main(int argc, char** argv)
 				buff,
 				sizeof(buff),
 				0);
-
   buff[bytesRead] = 0;
-
+  
   // test which option the client chose
   if(strcmp(buff, "-m") == 0)
     {
-      const char* toClient = "The server will now attempt to read your sent messages.";
-
+      const char* readMsg = "The server will now attempt to read your sent messages.";
+      
       // 4. attempt to send message
-      sendVal = send(clientSocket,
-		     toClient,
-		     strlen(toClient),
-		     0);
+      bytesSent = sendWrapper(&clientSocket,
+			      readMsg,
+			      strlen(readMsg),
+			      0);
 
       // 5. attempt to receive message
       bytesRead = recvWrapperServer(&clientSocket,
@@ -109,31 +107,31 @@ int main(int argc, char** argv)
       fprintf(stdout,
 	      "Client:  %s\n",
 	      buff);
-	  
-      const char* toClient2 = "Hello client";
+
+      const char* toClientMsg = "Hello client.";
+      
       // 6. send message to client
-      sendVal = send(clientSocket,
-		     toClient2,
-		     strlen(toClient2),
-		     0);
+      bytesSent = sendWrapper(&clientSocket,
+			      toClientMsg,
+			      strlen(toClientMsg),
+			      0);
 	  
     }
   else if(strcmp(buff, "-f") == 0)
     {
       char buff[1];
       FILE* saveFile;
-      int bytesRead;
       char* fileName = "receivedFile.txt";
-      char* mode = "w+";
-      int writeVal;
+      const char* mode = "w+";
+      int bytesWritten;
 
-      const char* toClient = "The server will now attempt to receive your file.";
+      const char* fileMsg = "The server will now attempt to receive your file.";
 
       // 4. attempt to send message
-      sendVal = send(clientSocket,
-		     toClient,
-		     strlen(toClient),
-		     0);
+      bytesSent = sendWrapper(&clientSocket,
+			      fileMsg,
+			      strlen(fileMsg),
+			      0);
       
       // open file for writing
       fopenServerWrapper(&clientSocket,
@@ -156,13 +154,13 @@ int main(int argc, char** argv)
 	  // test for ETX from client
 	  if(buff[0] == 3)
 	    {
-	      const char* toClient3 = "File received successfully.";
+	      const char* fileReceivedMsg = "File received successfully.";
 	      
 	      // 7. attempt to send success message
-	      sendVal = send(clientSocket,
-			     toClient3,
-			     strlen(toClient3),
-			     0);	      
+	      bytesSent = send(clientSocket,
+			       fileReceivedMsg,
+			       strlen(fileReceivedMsg),
+			       0);	      
 	      break;
 	    }
 
@@ -173,13 +171,13 @@ int main(int argc, char** argv)
 	    }
 
 	  // write data to file
-	  writeVal = fwrite(buff,
+	  bytesWritten = fwrite(buff,
 			    1,
 			    bytesRead,
 			    saveFile);
 
 	  // test for bad write
-	  if(writeVal < 0)
+	  if(bytesWritten < 0)
 	    {
 	      perror("fwrite() failed");
 	      break;
@@ -194,10 +192,10 @@ int main(int argc, char** argv)
       const char* optionFailed = "Failed to read option.";
 
       // 4. attempt to send message
-      sendVal = send(clientSocket,
-		     optionFailed,
-		     strlen(optionFailed),
-		     0);      
+      bytesSent = send(clientSocket,
+		       optionFailed,
+		       strlen(optionFailed),
+		       0);      
       fprintf(stderr, "Something went wrong with the option received from client.\n");
     }
 
