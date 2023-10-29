@@ -121,7 +121,7 @@ int main(int argc, char** argv)
     {
       char buff[1];
       FILE* saveFile;
-      char* fileName = "receivedFile.txt";
+      const char* fileName = "receivedFile.txt";
       const char* mode = "w+";
       int bytesWritten;
 
