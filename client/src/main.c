@@ -31,14 +31,18 @@ int main(int argc, char** argv)
 {
   if(argc == 1)
     {
-      fprintf(stderr, "Not enough arguments.\n");
-      fprintf(stderr, _PATTERN);
+      fprintf(stderr,
+	      "Not enough arguments.\n");
+      fprintf(stderr,
+	      _PATTERN);
       exit(EXIT_FAILURE);
     }
   else if (argc > 2)
     {
-      fprintf(stderr, "Too many arguments.\n");
-      fprintf(stderr, _PATTERN);
+      fprintf(stderr,
+	      "Too many arguments.\n");
+      fprintf(stderr,
+	      _PATTERN);
       exit(EXIT_FAILURE);
     }
 
@@ -104,20 +108,25 @@ int main(int argc, char** argv)
       // send file data from open file to server byte by byte
       while(_TRUE)
 	{
+	  // read from file to buffer
 	  bytesRead = fread(buffer,
 			    1,
 			    sizeof(buffer),
 			    inFile);
+
+	  // test that data wass successfully read
 	  if(bytesRead == 0)
 	    {
 	      break;
 	    }
-	  
+
+	  // send read data to server
 	  sendVal = send(clientSocket,
 			 buffer,
 			 bytesRead,
 			 0);
-	  
+
+	  // test for send success
 	  if(sendVal == -1)
 	    {
 	      perror("send() failed");
