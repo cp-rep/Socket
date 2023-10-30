@@ -214,11 +214,37 @@ int main(int argc, char** argv)
 
       {
 	int socketfdPacket;
-      
+	struct sockaddr socketAddress;
+	const int socketAddrSize = sizeof(socketAddress);
+	char packet[sizeof(struct iphdr) + sizeof(struct tcphdr)];
+
+	// sanity zero out the packet buffer
+	for(int i = 0; i < sizeof(packet); i++)
+	  {
+	    packet[i] = 0;
+	  }
+	
 	// open new raw socket for TCP packet transfer
 	socketfdPacket = createRawSocketTCP();
-	
 
+	// receive packet
+	bytesReceived = recvfrom(socketfdPacket,
+				 packet,
+				 sizeof(packet),
+				 0,
+				 &socketAddress,
+				 (socklen_t*)&socketAddrSize);
+	    
+	// check if bytes were received from the client
+	if(bytesReceived > 0)
+	  {
+	    fprintf(stdout, "Packet received successfully.\n");	    
+	  }
+	else
+	  {
+	    perror("recvfrom() failed");
+	    break;
+	  }
 
 	close(socketfdPacket);
       }
