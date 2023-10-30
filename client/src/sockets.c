@@ -7,8 +7,6 @@
 */
 #include "sockets.h"
 
-
-
 /*
   Function:
    createStreamSocketWrapper
@@ -293,9 +291,6 @@ size_t recvWrapperServer(int* clientSocket,
 
 
 
-
-
-
 /*
   Function:
    recvWrapperClient
@@ -389,7 +384,6 @@ FILE* fopenServerWrapper(int* clientSocket,
 
   return *saveFile;
 } // end of "fopenServerWrapper"
-
 
 
 
@@ -520,7 +514,7 @@ void defineTCPHeader(struct tcphdr* tcpHeader,
 
 /*
   Function:
-   printIPHeaderClient
+   printIPHeader
 
   Description:
    Prints a struct iphdr type to stdout.  Network byte order is handled where needed
@@ -532,7 +526,7 @@ void defineTCPHeader(struct tcphdr* tcpHeader,
   Output:
    NONE
 */
-void printIPHeaderClient(struct iphdr* ipHeader)
+void printIPHeader(struct iphdr* ipHeader)
 {
   fprintf(stdout, "** IP HEADER **\n");
   fprintf(stdout, "ihl: %u\n", ipHeader->ihl);
@@ -547,14 +541,13 @@ void printIPHeaderClient(struct iphdr* ipHeader)
   fprintf(stdout, "source ip: %s\n", inet_ntoa(*(struct in_addr*)&ipHeader->saddr));
   fprintf(stdout, "destination ip: %s\n",
 	  inet_ntoa(*(struct in_addr*)&ipHeader->daddr));
-} // end of "printIPHeaderClient"
-
+} // end of "printIPHeader"
 
 
 
 /*
   Function:
-   printTCPHeaderClient
+   printTCPHeader
 
   Description:
    Prints a struct tcphr type to stdout.  Network byte order is handled where needed
@@ -566,7 +559,7 @@ void printIPHeaderClient(struct iphdr* ipHeader)
   Output:
    NONE
 */
-void printTCPHeaderClient(struct tcphdr* tcpHeader)
+void printTCPHeader(struct tcphdr* tcpHeader)
 {
   fprintf(stdout, "**TCP HEADER **\n");
   fprintf(stdout, "source: %u\n", ntohs(tcpHeader->source));
@@ -578,4 +571,4 @@ void printTCPHeaderClient(struct tcphdr* tcpHeader)
   fprintf(stdout, "win: %u\n", ntohs(tcpHeader->window));
   fprintf(stdout, "check: %u\n", ntohs(tcpHeader->check));
   fprintf(stdout, "urg_ptr: %u\n", tcpHeader->urg_ptr);
-} // end of "printTCPHeaderClient"
+} // end of "printTCPHeader"

@@ -58,6 +58,6 @@ void defineIPHeader(struct iphdr* ipHeader,
 void defineTCPHeader(struct tcphdr* tcpHeader,
 		     const int sourcePort,
 		     const int destPort);
-void printIPHeaderClient(struct iphdr* ipHeader);
-void printTCPHeaderClient(struct tcphdr* tcpHeader);
+void printIPHeader(struct iphdr* ipHeader);
+void printTCPHeader(struct tcphdr* tcpHeader);
 #endif
