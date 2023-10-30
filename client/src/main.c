@@ -263,6 +263,7 @@ int main(int argc, char** argv)
 				 tcpHeader->dest);
 
 
+	// send packet to server
 	fprintf(stdout, "Sending packet...\n");
 	bytesSent = sendto(socketfdPacket,
 			   packet,
