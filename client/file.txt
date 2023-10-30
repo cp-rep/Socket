@@ -1,0 +1,12 @@
+This is a test file.
+When
+ the
+  server
+   receives
+    this
+     file
+      it
+       should
+        match
+	 the
+	  clients.
