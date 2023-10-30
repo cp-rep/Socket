@@ -4,8 +4,8 @@
 
   Description:
    The main driver file for the server side of client/server data transmission.
-   The server accepts incoming connections to read a buffer of data containing
-   a message or for receiving a file from the client connection.
+   The server accepts incoming connections to read a buffer(s) of data containing
+   a message, file, or a packet from the client connection.
 */
 #include <arpa/inet.h>
 #include <stdio.h>

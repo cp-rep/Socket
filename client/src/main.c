@@ -4,9 +4,10 @@
 
   Description:
    The main driver file for the client side of client/server data transmission.
-   The client attempts to connect with the server to send a buffer of data containing
-   a message, and then awaits a response.  Or, the client attempts to send a file byte
-   by byte to the server.
+   The client attempts to connect with the server to send a either a buffer of text,
+   a file, or a packet to the server.
+
+ 
 */
 #include <arpa/inet.h>
 #include <stdio.h>
