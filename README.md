@@ -12,7 +12,7 @@ A separate executable is required for the client and server. Socket uses the Mak
 ## How to Run Socket
 * Ensure superuser privileges are enabled for the user running the program.
 * Run the server executable.  The server will open a port and wait for an incoming connection.
-# Run the client executable from the command line with any single option of '-m', '-f', '-p' where 'm' is for message, 'f' for file, and 'p' for packet.
+* Run the client executable from the command line with any single option of '-m', '-f', '-p' where 'm' is for message, 'f' for file, and 'p' for packet.
 
 ## Program Motivation
 This was a refresher for socket programming in C.  I wanted to revisit socket programming because I may use some of these features as a base for implementing client/server communication in another program I am working on.
