@@ -22,7 +22,7 @@
 #define _SERVERPORT 8000
 #define _CLIENTPACKETPORT 9000
 #define _SERVERPACKETPORT 9000
-#define _PATTERN "Pattern is: ./client [-m, -f] where 'm' is for message and 'f' for file\n"
+#define _PATTERN "Pattern is: ./client [-m, -f, -p] where 'm' is for message, 'f' for file, and 'p' for packet.\n"
 
 
 
@@ -251,17 +251,16 @@ int main(int argc, char** argv)
 
 	// print ip/tcp headers to stdout before sending to server
 	fprintf(stdout, "\n");
-	fprintf(stdout, "Printing newly defined IP Header and TCP Header.\n");
-	printIPHeaderClient(ipHeader);
+	fprintf(stdout, "Printing newly defined IP and TCP Headers.\n");
+	printIPHeader(ipHeader);
 	fprintf(stdout, "\n");
-	printTCPHeaderClient(tcpHeader);
+	printTCPHeader(tcpHeader);
 	fprintf(stdout, "\n");
 
 	// define the server address
 	initSocketAddressWrapper(&socketAddress,
 				 ipHeader->daddr,
 				 tcpHeader->dest);
-
 
 	// send packet to server
 	fprintf(stdout, "Sending packet...\n");
@@ -276,10 +275,14 @@ int main(int argc, char** argv)
 	if(bytesSent > 0)
 	  {
 	    fprintf(stdout, "Packet sent successfully.\n");
+	    fprintf(stdout, "Packet size: %lu\n", bytesSent);
 	  }
 	else
 	  {
 	    perror("sendto() failed");
+	    close(clientSocket);
+	    close(socketfdPacket);
+	    exit(EXIT_FAILURE);
 	  }
 	
 	close(socketfdPacket);
