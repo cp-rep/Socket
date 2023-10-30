@@ -18,4 +18,4 @@ A separate executable is required for the client and server. Socket uses the Mak
 This was a refresher for socket programming in C.  I wanted to revisit socket programming because I may use some of these features as a base for implementing client/server communication in another program I am working on.
 
 ## Warning
-* Sending hand-coded packets is considered a high-risk operation for system security.  While we are sending empty packets to ourselves using the loopback address, doing so should be done in your own confidence of the code to take such risks.
+Sending hand-coded packets is considered a high-risk operation for system security.  While we are sending empty packets to ourselves using the loopback address, doing so should be done in your own confidence of the code to take such risks.
