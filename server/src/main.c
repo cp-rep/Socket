@@ -216,41 +216,60 @@ int main(int argc, char** argv)
 	int socketfdPacket;
 	struct sockaddr socketAddress;
 	const int socketAddrSize = sizeof(socketAddress);
-	char packet[sizeof(struct iphdr) + sizeof(struct tcphdr)];
+	char packet[sizeof(struct iphdr) + sizeof(struct tcphdr) + 20];
+	struct iphdr* ipHeader;
+	struct tcphdr* tcpHeader;
 
 	// sanity zero out the packet buffer
 	for(int i = 0; i < sizeof(packet); i++)
 	  {
 	    packet[i] = 0;
 	  }
-	
+
 	// open new raw socket for TCP packet transfer
 	socketfdPacket = createRawSocketTCP();
 
 	// receive packet
-	bytesReceived = recvfrom(socketfdPacket,
-				 packet,
-				 sizeof(packet),
-				 0,
-				 &socketAddress,
-				 (socklen_t*)&socketAddrSize);
-	    
+	bytesRead = recvfrom(socketfdPacket,
+			     packet,
+			     sizeof(packet),
+			     0,
+			     &socketAddress,
+			     (socklen_t*)&socketAddrSize);
+
 	// check if bytes were received from the client
-	if(bytesReceived > 0)
+	if(bytesRead > 0)
 	  {
-	    fprintf(stdout, "Packet received successfully.\n");	    
+	    fprintf(stdout, "Packet received successfully.\n");
+	    fprintf(stdout, "Packet Size: %lu\n", bytesRead);
 	  }
 	else
 	  {
 	    perror("recvfrom() failed");
-	    break;
+	    close(clientSocket);
+	    close(serverSocket);
+	    close(socketfdPacket);
+	    exit(EXIT_FAILURE);
 	  }
 
+	// point ip header to the address of the packet buffer plus
+	// the padding the OS adds
+ 	ipHeader = (struct iphdr*)(packet + 20);
+
+	// point tcp header to the address of the packet buffer
+	// directly after the iphdr ends
+	tcpHeader = (struct tcphdr*)(packet + sizeof(struct iphdr) + 20);
+	
+	// verify that the client packet data matches the received packet data
+	fprintf(stdout, "\n");
+	fprintf(stdout, "Printing received IP and TCP Headers.\n");
+	printIPHeader(ipHeader);
+	fprintf(stdout, "\n");	
+	printTCPHeader(tcpHeader);
+	fprintf(stdout, "\n");
+	
 	close(socketfdPacket);
       }
-
-
-      
     }
   else
     {
