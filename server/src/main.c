@@ -21,7 +21,6 @@
 #define _FALSE 0
 #define _SERVERIP "127.0.0.1"
 #define _SERVERPORT 8000
-#define _PACKETPORT 8080
 #define _QUEUELEN 10
 
 
