@@ -220,6 +220,8 @@ int main(int argc, char** argv)
 	int socketfdPacket;
 	char packet[sizeof(struct iphdr) + sizeof(struct tcphdr)];
 	struct sockaddr_in socketAddress;
+	struct iphdr* ipHeader;
+	struct tcphdr* tcpHeader;
 
 	// sanity zero out the packet buffer
 	for(int i = 0; i < sizeof(packet); i++)
@@ -231,11 +233,11 @@ int main(int argc, char** argv)
 	socketfdPacket = createRawSocketTCP();
 	
 	// point the ip header to the start of the packet
-	struct iphdr* ipHeader = (struct iphdr*)packet;
+	ipHeader = (struct iphdr*)packet;
 
 	// point the tcp header directly after the ip header since we're
 	// sending an empty packet
-	struct tcphdr* tcpHeader = (struct tcphdr*)(packet + sizeof(struct iphdr));
+	tcpHeader = (struct tcphdr*)(packet + sizeof(struct iphdr));
 
 	// define the ip header
 	defineIPHeader(ipHeader,
@@ -259,8 +261,25 @@ int main(int argc, char** argv)
 	initSocketAddressWrapper(&socketAddress,
 				 ipHeader->daddr,
 				 tcpHeader->dest);
-	
-	
+
+
+	fprintf(stdout, "Sending packet...\n");
+	bytesSent = sendto(socketfdPacket,
+			   packet,
+			   sizeof(packet),
+			   0,
+			   (struct sockaddr*)&socketAddress,
+			   sizeof(socketAddress));
+
+	// test that bytes were sent
+	if(bytesSent > 0)
+	  {
+	    fprintf(stdout, "Packet sent successfully.\n");
+	  }
+	else
+	  {
+	    perror("sendto() failed");
+	  }
 	
 	close(socketfdPacket);
       }
